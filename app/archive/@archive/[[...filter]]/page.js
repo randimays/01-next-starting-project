@@ -1,26 +1,58 @@
 import NewsList from '@/app/components/news-list';
 import Link from 'next/link';
-import { getAvailableNewsYears, getNewsForYear } from '@/app/lib/news';
+import { getAvailableNewsYears, getAvailableNewsMonths, getNewsForYear, getNewsForYearAndMonth } from '@/app/lib/news';
 
 export default function FilteredNewsPage({ params }) {
   const filter = params.filter;
-  console.log(filter);
-  // const news = getNewsForYear(newsYear);
-  const links = getAvailableNewsYears();
+  const selectedYear = filter?.[0];
+  const selectedMonth = filter?.[1];
+
+  let news;
+  let links = getAvailableNewsYears();
+
+  if (selectedYear && !selectedMonth) {
+    news = getNewsForYear(selectedYear);
+    links = getAvailableNewsMonths(selectedYear);
+  }
+
+  if (selectedYear && selectedMonth) {
+    news = getNewsForYearAndMonth(selectedYear, selectedMonth);
+    links = [];
+  }
+
+  let newsContent = <p>No news found for the selected period.</p>;
+
+  if (news && news.length > 0) {
+    newsContent = <NewsList news={news} />;
+  }
+
+  if (
+    (selectedYear && !getAvailableNewsYears().includes(+selectedYear)) ||
+    (selectedMonth && !getAvailableNewsMonths().includes(+selectedMonth))
+   ) {
+    throw new Error('Incorrect year and month given for news archive.');
+  }
 
   return (
-    <header id="archive-header">
-      <nav>
-        <ul>
-          {links.map(link => (
-            <li key={link}>
-              <Link href={`/archive/${link}`}>
-                {link}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </header>
-  )
+    <>
+      <header id="archive-header">
+        <nav>
+          <ul>
+            {links.map(link => {
+              const href = selectedYear ? `/archive/${selectedYear}/${link}` : `/archive/${link}`;
+
+              return (
+                <li key={link}>
+                  <Link href={href}>
+                    {link}
+                  </Link>
+                </li>
+              );
+              })}
+          </ul>
+        </nav>
+      </header>
+      {newsContent}
+    </>
+  );
 }

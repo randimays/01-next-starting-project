@@ -23,6 +23,7 @@ export function getAvailableNewsMonths(year) {
     const newsYear = new Date(news.date).getFullYear();
     if (newsYear === +year) {
       const month = new Date(news.date).getMonth();
+
       if (!months.includes(month)) {
         months.push(month + 1);
       }
