@@ -13,10 +13,12 @@ const NewsItem = ({ params }) => {
   return (
     <article className="news-article">
       <header>
-        <img
-          alt={newsItem.title}
-          src={`/images/news/${newsItem.image}`}
-        />
+        <Link href={`/news/${newsItem.slug}/image`}>
+          <img
+            alt={newsItem.title}
+            src={`/images/news/${newsItem.image}`}
+          />
+        </Link>
         <h1>{newsItem.title}</h1>
         <time dateTime={newsItem.date}>{newsItem.date}</time>
       </header>
